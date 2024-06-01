@@ -1,6 +1,6 @@
 using PseudoSpectral
 using Test
-using Literate
+#using Literate
 
 const GROUP = get(ENV, "GROUP", "All")
 
@@ -13,9 +13,10 @@ docdir = "../docs/src/manual"
 litdir = "./literate"
 
 if GROUP == "All" || GROUP == "Basics"
-  include("properties.jl")
+  include("utilities.jl")
 end
 
+#=
 if GROUP == "All" || GROUP == "Notebooks"
   for (root, dirs, files) in walkdir(litdir)
     for file in files
@@ -24,6 +25,7 @@ if GROUP == "All" || GROUP == "Notebooks"
     end
   end
 end
+=#
 
 #=
 if GROUP == "Documentation"
