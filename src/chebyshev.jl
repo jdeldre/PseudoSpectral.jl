@@ -1,42 +1,86 @@
 
+
 "Normalized type-I discrete cosine transforms (on the Chebyshev extrema points)"
 dct1(f;kwargs...) = FFTW.r2r(f,FFTW.REDFT00;kwargs...)/(length(f)-1)
-dct1(f,dims;kwargs...) = FFTW.r2r(f,FFTW.REDFT00,dims;kwargs...)/(length(f)-1)
+dct1(f,dims;kwargs...) = FFTW.r2r(f,FFTW.REDFT00,dims;kwargs...)/(size(f,dims)-1)
 
 "Normalized type-I inverse discrete cosine transforms (on the Chebyshev extrema points)"
 idct1(f;kwargs...) = 0.5*FFTW.r2r(f,FFTW.REDFT00;kwargs...)
 idct1(f,dims;kwargs...) = 0.5*FFTW.r2r(f,FFTW.REDFT00,dims;kwargs...)
 
 """
-    fchebt(f::AbstractVector) -> AbstractVector
+    fchebt(f::AbstractVector[,dim::Integer]) -> AbstractVector
 
 Given data `f` on the extrema Chebyshev points, evaluate
-the Chebyshev transform.
+the Chebyshev transform. The optional argument `dim` specifies
+the dimension along which to take the transform.
 """
-function fchebt(f::AbstractVector{T}) where {T<:Real}
-    N = length(f)-1
-
+function fchebt(f::AbstractVector{T}) where {T<:Number}
+    N = length(f) - 1
     a = dct1(f)
+    _adjust_fchebt!(a,N,Val(0))
+end
+
+function fchebt(f::AbstractArray{T},dim) where {T<:Number}
+    N = size(f,dim) - 1
+    a = dct1(f,dim)
+    _adjust_fchebt!(a,N,Val(dim))
+end
+
+function _adjust_fchebt!(a,N,::Val{0})
     a[1] *= 0.5
     a[N+1] *= 0.5
     return a
+end
 
+function _adjust_fchebt!(a,N,::Val{1})
+    a[1,:] *= 0.5
+    a[N+1,:] *= 0.5
+    return a
+end
+
+function _adjust_fchebt!(a,N,::Val{2})
+    a[:,1] *= 0.5
+    a[:,N+1] *= 0.5
+    return a
 end
 
 """
-    ifchebt(f::AbstractVector) -> AbstractVector
+    ifchebt(f::AbstractVector[,dim]) -> AbstractVector
 
 Given data `f` on the extrema Chebyshev points, evaluate
-the inverse Chebyshev transform.
+the inverse Chebyshev transform. The optional argument `dim` specifies
+the dimension along which to take the inverse transform.
 """
-function ifchebt(a::AbstractVector{T}) where {T<:Real}
+function ifchebt(a::AbstractVector{T}) where {T<:Number}
     N = length(a)-1
-
     f = copy(a)
+    _adjust_ifchebt!(f,N,Val(0))
+    idct1(f)
+end
+
+function ifchebt(a::AbstractArray{T},dim) where {T<:Number}
+    N = size(a,dim) - 1
+    f = copy(a)
+    _adjust_ifchebt!(f,N,Val(dim))
+    idct1(f,dim)
+end
+
+function _adjust_ifchebt!(f,N,::Val{0})
     f[1] *= 2
     f[N+1] *= 2
-    f .= idct1(f)
-   
+    return f
+end
+
+function _adjust_ifchebt!(f,N,::Val{1})
+    f[1,:] *= 2
+    f[N+1,:] *= 2
+    return f
+end
+
+function _adjust_ifchebt!(f,N,::Val{2})
+    f[:,1] *= 2
+    f[:,N+1] *= 2
     return f
 end
 
@@ -46,7 +90,7 @@ end
 Given the Chebshev representation of a set of data, return
 the Chebshev representation of the derivative.
 """
-function chebdcoeffs(a::AbstractVector{T}) where {T<:Real}
+function chebdcoeffs(a::AbstractVector{T}) where {T<:Number}
 
     N = length(a)-1
     da = zero(a)

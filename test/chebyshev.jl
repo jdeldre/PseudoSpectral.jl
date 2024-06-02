@@ -14,6 +14,27 @@
     f2 = fchebt(ifchebt(f))
     @test norm(f-f2) < 1e-13
 
+    m = 42
+    f = rand(m,n+1)
+    fc = fchebt(f,2)
+    f2 = ifchebt(fc,2)
+    @test norm(f-f2) < 1e-13
+
+    fc = ifchebt(f,2)
+    f2 = fchebt(fc,2)
+    @test norm(f-f2) < 1e-13
+
+    f = rand(n+1,m)
+    fc = fchebt(f,1)
+    f2 = ifchebt(fc,1)
+    @test norm(f-f2) < 1e-13
+
+    fc = ifchebt(f,1)
+    f2 = fchebt(fc,1)
+    @test norm(f-f2) < 1e-13
+
+
+
 end
 
 @testset "Differentiation" begin
