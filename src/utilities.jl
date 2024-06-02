@@ -11,14 +11,15 @@ function zeropad(f::Array{T},padded::Tuple{Int,Int}) where {T}
     m, n = size(f)
     mmod, nmod = padded
     
+    mshift = div(mmod-m,2,RoundUp)
+    nshift = div(nmod-n,2,RoundUp)
+
     fshift = fftshift(f) # put in -N/2 -> N/2-1 form
-    mshift = (mmod-m)÷2
-    nshift = (nmod-n)÷2
     
     fmod = zeros(T,mmod,nmod)
     copyto!(fmod,CartesianIndices((1:m,1:n)),fshift,CartesianIndices(fshift))
     fmod .= circshift(fmod,(mshift,nshift))
-    return fftshift(fmod)
+    return ifftshift(fmod)
 end
 
 """
@@ -31,14 +32,15 @@ function unzeropad(f::Array{T},unpadded::Tuple{Int,Int}) where {T}
     m, n = size(f)
     mmod, nmod = unpadded
     
+    mshift = div(mmod-m,2,RoundDown) # these should be negative
+    nshift = div(nmod-n,2,RoundDown)
+
     fshift = fftshift(f) # put in -N/2 -> N/2-1 form
-    mshift = (mmod-m)÷2  # these should be negative
-    nshift = (nmod-n)÷2
     
     fmod = zeros(T,mmod,nmod)
     fshift .= circshift(fshift,(mshift,nshift))
     copyto!(fmod,CartesianIndices(fmod),fshift,CartesianIndices((1:mmod,1:nmod)))
-    return fftshift(fmod)
+    return ifftshift(fmod)
 end
 
 

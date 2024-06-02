@@ -1,6 +1,9 @@
+
+"Normalized type-I discrete cosine transforms (on the Chebyshev extrema points)"
 dct1(f;kwargs...) = FFTW.r2r(f,FFTW.REDFT00;kwargs...)/(length(f)-1)
 dct1(f,dims;kwargs...) = FFTW.r2r(f,FFTW.REDFT00,dims;kwargs...)/(length(f)-1)
 
+"Normalized type-I inverse discrete cosine transforms (on the Chebyshev extrema points)"
 idct1(f;kwargs...) = 0.5*FFTW.r2r(f,FFTW.REDFT00;kwargs...)
 idct1(f,dims;kwargs...) = 0.5*FFTW.r2r(f,FFTW.REDFT00,dims;kwargs...)
 
@@ -73,6 +76,7 @@ function _zero_small_values!(a)
     a[abs.(a).<eps()] .= 0.0
 end
 
+
 function _construct_chebd1(N::Int)
 
     c = ones(Float64,N+1)
@@ -99,4 +103,7 @@ function _construct_chebd2(N,D1)
         end
     end
     return D2
+end
+
+function _set_dirichlet_at_yplus1!(A)
 end

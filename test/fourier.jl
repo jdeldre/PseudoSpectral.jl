@@ -1,11 +1,34 @@
 @testset "Utilities" begin 
     m,n = 46,58
-    f = rand(ComplexF64,46,58)
+    f = rand(ComplexF64,m,n)
 
     m2, n2 = m+24, n+36
     fpad = zeropad(f,(m2,n2))
     f2 = unzeropad(fpad,(m,n))
-    @test maximum(abs.(f2-f)) == 0.0
+    @test f2 == f
+
+    m, n = 13, 12
+    f = rand(ComplexF64,m,n)
+    m2, n2 = 15, 24
+    fpad = zeropad(f,(m2,n2))
+    f2 = unzeropad(fpad,(m,n))
+    @test f2 == f  
+
+    m2, n2 = m, 24
+    fpad = zeropad(f,(m2,n2))
+    f2 = unzeropad(fpad,(m,n))
+    @test f2 == f  
+
+    m2, n2 = 16, n
+    fpad = zeropad(f,(m2,n2))
+    f2 = unzeropad(fpad,(m,n))
+    @test f2 == f  
+
+    m2, n2 = m, n
+    fpad = zeropad(f,(m2,n2))
+    f2 = unzeropad(fpad,(m,n))
+    @test f2 == f
+
 end
 
 @testset "Derivatives" begin

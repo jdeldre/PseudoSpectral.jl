@@ -1,19 +1,23 @@
 """
-    fourier2physical(fhat) -> f
+    fourier2physical(fhat[,dim]) -> f
 
 Return the physical field associated with the Fourier-space representation `fhat`.
 This function takes the inverse FFT, but also shifts the components in the array
 to undo what is done in `physical_to_fourier`
 """
 fourier2physical(fhat::Array{T}) where T<: Complex = real(fftshift(ifft(fhat)))
+fourier2physical(fhat::Array{T},dim) where T<: Complex = real(fftshift(ifft(fhat,dim),dim))
+
 
 """
-    physical2fourier(f) -> fhat
+    physical2fourier(f[,dim]) -> fhat
 
 Return the Fourier-space representation of the physical field `f`.
 This function first shifts the array and then takes the Fourier transform.
 """
 physical2fourier(f::Array{T}) where T<: Real = fft(fftshift(f))
+physical2fourier(f::Array{T},dim) where T<: Real = fft(fftshift(f,dim),dim)
+
 
 """
     velocity(what::Array{ComplexF64}) -> Array{Real}, Array{Real}
