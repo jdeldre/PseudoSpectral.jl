@@ -4,7 +4,8 @@ module PseudoSpectral
     using UnPack
 
     export zeropad, unzeropad, velocity, streamfunction, vorticity, physical2fourier,
-            fourier2physical, VorticityNSCache, vorticity_ns_step!
+            fourier2physical, VorticityNSCache, vorticity_ns_step!, spectralDx, spectralDy,
+            shearlayer, twovortex, randomfield
 
     abstract type AbstractPseudoSpectralCache end
     
@@ -14,6 +15,7 @@ module PseudoSpectral
     include("nonlinear.jl")
     include("fields.jl")
     include("navierstokes.jl")
+    include("examples.jl")
 
 
 

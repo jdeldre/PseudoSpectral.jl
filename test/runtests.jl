@@ -1,5 +1,6 @@
 using PseudoSpectral
 using Test
+using LinearAlgebra
 #using Literate
 
 const GROUP = get(ENV, "GROUP", "All")
