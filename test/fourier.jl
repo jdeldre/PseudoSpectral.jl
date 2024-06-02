@@ -31,6 +31,33 @@
 
 end
 
+@testset "Transforms"  begin
+    Nx, Ny = 16, 32
+    f = rand(Nx,Ny+1)
+    fhat = physical2fourier(f,1)
+    f2 = fourier2physical(fhat,1)
+    @test norm(f-f2) < 1e-14
+
+    Nx, Ny = 16, 32
+    f = rand(Nx,Ny)
+    fhat = physical2fourier(f,1)
+    f2 = fourier2physical(fhat,1)
+
+    @test norm(f-f2) < 1e-14
+
+    fhat = physical2fourier(f,2)
+    f2 = fourier2physical(fhat,2)
+
+    @test norm(f-f2) < 1e-14
+
+    fhat = physical2fourier(f)
+    f2 = fourier2physical(fhat)
+
+    @test norm(f-f2) < 1e-14
+
+
+end
+
 @testset "Derivatives" begin
 
     Nx, Ny = 128, 128
