@@ -16,6 +16,7 @@ litdir = "./literate"
 if GROUP == "All" || GROUP == "Basics"
   include("fourier.jl")
   include("chebyshev.jl")
+  include("fc.jl")
 end
 
 #=
