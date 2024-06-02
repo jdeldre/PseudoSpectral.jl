@@ -7,11 +7,14 @@ module PseudoSpectral
             fourier2physical, VorticityNSCache, vorticity_ns_step!, spectralDx, spectralDy,
             shearlayer, twovortex, randomfield
 
+    export dct1, idct1, fchebt, ifchebt, chebdcoeffs, chebdiff
+
     abstract type AbstractPseudoSpectralCache end
     
 
     include("utilities.jl")
     include("diff.jl")
+    include("chebyshev.jl")
     include("nonlinear.jl")
     include("fields.jl")
     include("navierstokes.jl")

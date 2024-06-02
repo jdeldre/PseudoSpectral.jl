@@ -14,7 +14,8 @@ docdir = "../docs/src/manual"
 litdir = "./literate"
 
 if GROUP == "All" || GROUP == "Basics"
-  include("utilities.jl")
+  include("fourier.jl")
+  include("chebyshev.jl")
 end
 
 #=
