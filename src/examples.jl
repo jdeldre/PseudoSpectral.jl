@@ -64,3 +64,24 @@ function _randomfield_fourier!(fhat::Array{T};factor=1.0) where T<:Complex
     end
     return factor*fhat
 end
+
+function randomfield_fourier_chebyshev(x::AbstractVector,y::AbstractVector; factor = 10.0)
+    Nx, Ny = length(x), length(y)-1
+    f = zeros(Nx,Ny+1)
+    fhat = physical2fourier(f,1)
+    Nxmax = Nx÷4
+    for i in 2:Nxmax, j in 2:Ny
+        f0 = exp(im*2π*rand())
+        fhat[i,j] = f0
+        fhat[Nx-i+2,j] = conj(f0)
+    end
+    for i in Nx:-1:Nx-Nxmax+2, j in 2:Ny
+        f0 = exp(im*2π*rand())
+        fhat[i,j] = f0
+        fhat[Nx-i+2,j] = conj(f0)
+    end
+    
+    fhat .*= factor*sqrt(Nx*Ny)
+    
+    f = fourier2physical(fhat,1)
+end

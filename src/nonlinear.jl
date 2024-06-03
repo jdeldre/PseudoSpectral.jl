@@ -85,7 +85,7 @@ function _poisson_fourier_chebyshev_dirichlet(what::Array,gplus_hat::Vector,gmin
 end 
 
 "Solves the equation u'' - σ*u = f on Chebyshev points, subject to u(1) = gplus, u(-1) = gminus"
-function _helmholtz_chebyshev_dirichlet(f::Vector,sigma::Real,gplus::Complex,gminus::Complex,D2::Matrix)
+function _helmholtz_chebyshev_dirichlet(f::Vector,sigma::Real,gplus::Number,gminus::Number,D2::Matrix)
     
     n = length(f)-1
     A = D2 - sigma*I
