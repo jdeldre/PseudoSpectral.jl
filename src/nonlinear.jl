@@ -1,4 +1,4 @@
-function _convective_derivative_fourier(what::Array)
+function _convective_derivative_fourier_fourier(what::Array)
 
     m, n = size(what)
     mpad, npad = ceil(Int,3*m/2), ceil(Int,3*n/2)
@@ -17,6 +17,26 @@ function _convective_derivative_fourier(what::Array)
 
 end
 
+"Compute convective derivative for Fourier Galerkin in x, Chebyshev collocation in y"
+function _convective_derivative_fourier_chebyshev(what::Array)
+
+    m, n = size(what)
+    mpad, npad = ceil(Int,3*m/2), n
+    nfact = (mpad/n)*(npad/n)
+
+    wpad = zeropad(what,(mpad,npad))
+
+    dwdx_pad = nfact*ifft(_dfhatdx(wpad))
+    dwdy_pad = nfact*ifft(_dfhatdy(wpad)) # instead, use Chebyshev diff operator
+
+    uhat_pad, vhat_pad = _velocity_from_vorticity_fourier(wpad) # need to solve this differently
+    upad = nfact*ifft(uhat_pad)
+    vpad = nfact*ifft(vhat_pad)
+    
+    ugradw_hat = unzeropad(fft(upad.*dwdx_pad .+ vpad.*dwdy_pad)/nfact,(m,n))
+
+end
+
 function _velocity_from_vorticity_fourier(what::Array)
     psihat = _streamfunction_fourier(what)
     psihat[1,1] = 0
@@ -24,8 +44,13 @@ function _velocity_from_vorticity_fourier(what::Array)
 end
 
 function _velocity_from_streamfunction_fourier(psihat::Array)
-    return _dfhatdy(psihat), -_dfhatdx(psihat)
+    return _u_velocity_from_streamfunction_fourier(psihat), 
+           _v_velocity_from_streamfunction_fourier(psihat)
 end
+
+_u_velocity_from_streamfunction_fourier(psihat::Array) = _dfhatdy(psihat)
+_v_velocity_from_streamfunction_fourier(psihat::Array) = -_dfhatdx(psihat)
+
 
 function _streamfunction_fourier(what::Array)
     m, n = size(what)

@@ -23,7 +23,7 @@ end
 function twovortex(x::AbstractVector,y::AbstractVector; radius = 0.2, distance = 1.0, circulation = 1.0)
     amp = circulation/(π*radius^2)
     return amp*exp.(-((x .- 0.5*distance .- π).^2 .+ (y' .- π).^2)/radius^2) .+ 
-           amp*exp.(-((x .+ 0.5*distance .- π).^2 .+ (y' .- π .+ 0.1*distance).^2)/2/radius^2)
+           amp*exp.(-((x .+ 0.5*distance .- π).^2 .+ (y' .- π).^2)/radius^2)
 end
 
 

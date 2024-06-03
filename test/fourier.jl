@@ -77,3 +77,22 @@ end
 
 end
 
+@testset "Velocity from vorticity" begin
+    Nx, Ny = 64, 64
+    Δx, Δy = 2π/Nx, 2π/Ny
+    x = range(0,2π,Nx+1)[1:Nx]
+    y = range(0,2π,Ny+1)[1:Ny]
+    ω = twovortex(x,y,distance=1.0)
+
+    ω̂ = physical2fourier(ω)
+    u, v = velocity(ω̂)
+    ψ = streamfunction(ω̂)
+
+    @test maximum(abs.(u)) ≈ 0.5267879828
+    @test maximum(abs.(ψ)) ≈ 0.5286985881
+
+    ugradw_hat = PseudoSpectral._convective_derivative_fourier_fourier(ω̂);
+    ugradw = fourier2physical(ugradw_hat)
+    @test maximum(abs.(ugradw)) ≈ 4.5207103746
+
+end
