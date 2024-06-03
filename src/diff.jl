@@ -38,3 +38,8 @@ end
 function _dfhatdy_kshifted(fhat,ky_shifted)
     return im*transpose(ky_shifted.*transpose(fhat))
 end
+
+"compute df/dy using Chebyshev collocation, assuming the second dimension holds y direction"
+function _dfhatdy_chebyshev(fhat,D1)
+    return fhat*transpose(D1)
+end

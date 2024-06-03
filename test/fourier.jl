@@ -91,7 +91,10 @@ end
     @test maximum(abs.(u)) ≈ 0.5267879828
     @test maximum(abs.(ψ)) ≈ 0.5286985881
 
-    ugradw_hat = PseudoSpectral._convective_derivative_fourier_fourier(ω̂);
+    ψ̂ = PseudoSpectral._poisson_fourier_fourier(-ω̂)
+    ψ̂[1,1] = 0
+
+    ugradw_hat = PseudoSpectral._convective_derivative_fourier_fourier(ω̂,ψ̂)
     ugradw = fourier2physical(ugradw_hat)
     @test maximum(abs.(ugradw)) ≈ 4.5207103746
 

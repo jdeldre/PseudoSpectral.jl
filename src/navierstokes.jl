@@ -13,7 +13,10 @@ end
 
 function vorticity_ns_step!(what::Array{T},params::VorticityNSCache{Nx,Ny}) where {T<:ComplexF64,Nx,Ny}
     @unpack Re, Δt, ksq, ugradw = params
-    ugradw .= _convective_derivative_fourier_fourier(what)
+    psihat = _poisson_fourier_fourier(-what)
+    psihat[1,1] = 0
+
+    ugradw .= _convective_derivative_fourier_fourier(what,psihat)
     what .= (what .- Δt*ugradw)./(1 .+ Δt/Re*ksq)
 
 end
