@@ -2,6 +2,7 @@ module PseudoSpectral
 
     using FFTW
     using UnPack
+    using LinearAlgebra
 
     export zeropad, unzeropad, velocity, streamfunction, vorticity, physical2fourier,
             fourier2physical, VorticityNSCache, vorticity_ns_step!, fourierDx, fourierDy,

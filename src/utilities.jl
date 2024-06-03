@@ -43,6 +43,12 @@ function unzeropad(f::Array{T},unpadded::Tuple{Int,Int}) where {T}
     return ifftshift(fmod)
 end
 
+function _get_ksq_shifted_1d(N::Int)
+    k = fftshift(-N÷2:N÷2-1)
+    ksq = k.^2
+    return k, ksq
+end
+
 
 function _get_ksq_shifted(Nx::Int,Ny::Int)
     kx = fftshift(-Nx÷2:Nx÷2-1)

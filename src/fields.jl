@@ -37,7 +37,7 @@ Return the streamfunction field, given
 the Fourier representation of the vorticity field `what`.
 """
 function streamfunction(what::Array{T}) where T <: ComplexF64
-    psihat = _streamfunction_fourier(what)
+    psihat = _poisson_fourier_fourier(what)
     return fourier2physical(psihat)
 end
 
