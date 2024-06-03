@@ -4,7 +4,7 @@ module PseudoSpectral
     using UnPack
 
     export zeropad, unzeropad, velocity, streamfunction, vorticity, physical2fourier,
-            fourier2physical, VorticityNSCache, vorticity_ns_step!, spectralDx, spectralDy,
+            fourier2physical, VorticityNSCache, vorticity_ns_step!, fourierDx, fourierDy,
             shearlayer, twovortex, randomfield
 
     export dct1, idct1, fchebt, ifchebt, chebdcoeffs, chebdiff

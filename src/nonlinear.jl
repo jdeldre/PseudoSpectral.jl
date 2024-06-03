@@ -6,8 +6,8 @@ function _convective_derivative_fourier_fourier(what::Array)
 
     wpad = zeropad(what,(mpad,npad))
 
-    dwdx_pad = nfact*ifft(_dfhatdx(wpad))
-    dwdy_pad = nfact*ifft(_dfhatdy(wpad))
+    dwdx_pad = nfact*ifft(_dfhatdx_fourier(wpad))
+    dwdy_pad = nfact*ifft(_dfhatdy_fourier(wpad))
 
     uhat_pad, vhat_pad = _velocity_from_vorticity_fourier(wpad)
     upad = nfact*ifft(uhat_pad)
@@ -26,8 +26,8 @@ function _convective_derivative_fourier_chebyshev(what::Array)
 
     wpad = zeropad(what,(mpad,npad))
 
-    dwdx_pad = nfact*ifft(_dfhatdx(wpad))
-    dwdy_pad = nfact*ifft(_dfhatdy(wpad)) # instead, use Chebyshev diff operator
+    dwdx_pad = nfact*ifft(_dfhatdx_fourier(wpad))
+    dwdy_pad = nfact*ifft(_dfhatdy_fourier(wpad)) # instead, use Chebyshev diff operator
 
     uhat_pad, vhat_pad = _velocity_from_vorticity_fourier(wpad) # need to solve this differently
     upad = nfact*ifft(uhat_pad)
@@ -48,8 +48,8 @@ function _velocity_from_streamfunction_fourier(psihat::Array)
            _v_velocity_from_streamfunction_fourier(psihat)
 end
 
-_u_velocity_from_streamfunction_fourier(psihat::Array) = _dfhatdy(psihat)
-_v_velocity_from_streamfunction_fourier(psihat::Array) = -_dfhatdx(psihat)
+_u_velocity_from_streamfunction_fourier(psihat::Array) = _dfhatdy_fourier(psihat)
+_v_velocity_from_streamfunction_fourier(psihat::Array) = -_dfhatdx_fourier(psihat)
 
 
 function _streamfunction_fourier(what::Array)

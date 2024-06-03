@@ -67,11 +67,11 @@ end
     ω = shearlayer(x,y)
     ω̂ = physical2fourier(ω)
 
-    dωdx = spectralDx(ω̂)
+    dωdx = fourierDx(ω̂)
     dωdx_ex = PseudoSpectral._dshearlayerdx(x,y)
     @test norm(dωdx - dωdx_ex) < 1e-3
 
-    dωdy = spectralDy(ω̂)
+    dωdy = fourierDy(ω̂)
     dωdy_ex = PseudoSpectral._dshearlayerdy(x,y)
     @test norm(dωdy - dωdy_ex) < 1e-3
 

@@ -1,29 +1,29 @@
 """
-    spectralDx(fhat)
+    fourierDx(fhat)
 
 Returns the physical derivative of a field (given in its Fourier representation, `fhat`)
 in the x direction.
 """
-spectralDx(fhat::Array{T}) where {T<:Complex} = fourier2physical(_dfhatdx(fhat))
+fourierDx(fhat::Array{T}) where {T<:Complex} = fourier2physical(_dfhatdx_fourier(fhat))
 
 
 """
-    spectralDy(fhat)
+    fourierDy(fhat)
 
 Returns the physical derivative of a field (given in its Fourier representation, `fhat`)
 in the y direction.
 """
-spectralDy(fhat::Array{T}) where {T<:Complex} = fourier2physical(_dfhatdy(fhat))
+fourierDy(fhat::Array{T}) where {T<:Complex} = fourier2physical(_dfhatdy_fourier(fhat))
 
 "compute df/dx in Fourier space"
-function _dfhatdx(fhat)
+function _dfhatdx_fourier(fhat)
     Nx, _ = size(fhat) 
     kx = -Nx÷2:Nx÷2-1
     _dfhatdx_kshifted(fhat,fftshift(kx))
 end
 
 "compute df/dy in Fourier space"
-function _dfhatdy(fhat)
+function _dfhatdy_fourier(fhat)
     _, Ny = size(fhat)
     ky = -Ny÷2:Ny÷2-1
     _dfhatdy_kshifted(fhat,fftshift(ky))
