@@ -11,6 +11,8 @@ module PseudoSpectral
     export dct1, idct1, fchebt, ifchebt, chebdcoeffs, chebdiff, chebint, VorticityFourierChebyshevNSCache, vorticity_fc_ns_step!,
             randomfield_fourier_chebyshev
 
+    export two_point_correlation_fourier, energy_fourier, tke, dissrate, restress            
+
     abstract type AbstractPseudoSpectralCache end
     
 
@@ -20,6 +22,7 @@ module PseudoSpectral
     include("nonlinear.jl")
     include("fields.jl")
     include("navierstokes.jl")
+    include("statistics.jl")
     include("examples.jl")
 
 

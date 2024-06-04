@@ -1,5 +1,5 @@
 struct VorticityFourierFourierNSCache{T,Nx,Ny} <: AbstractPseudoSpectralCache
-    Re :: Real
+    nu :: Real
     Δt :: Real
     ksq :: Array{T,2}
     ugradw_np1 :: Array{Complex{T},2}
@@ -8,17 +8,17 @@ struct VorticityFourierFourierNSCache{T,Nx,Ny} <: AbstractPseudoSpectralCache
 
 end
 
-function VorticityFourierFourierNSCache(Nx::Int,Ny::Int,Re::Real,Δt::Real;dtype=Float64)
+function VorticityFourierFourierNSCache(Nx::Int,Ny::Int,nu::Real,Δt::Real;dtype=Float64)
     kx, ky, ksq = _get_ksq_shifted(Nx,Ny)
     ugradw_np1 = zeros(Complex{dtype},Nx,Ny)
     ugradw_n = zeros(Complex{dtype},Nx,Ny)
     ugradw_nm1 = zeros(Complex{dtype},Nx,Ny)
 
-    return VorticityFourierFourierNSCache{dtype,Nx,Ny}(Re,Δt,ksq,ugradw_np1,ugradw_n,ugradw_nm1)
+    return VorticityFourierFourierNSCache{dtype,Nx,Ny}(nu,Δt,ksq,ugradw_np1,ugradw_n,ugradw_nm1)
 end
 
 function vorticity_ff_ns_step!(what::Array{T},params::VorticityFourierFourierNSCache{Nx,Ny}) where {T<:ComplexF64,Nx,Ny}
-    @unpack Re, Δt, ksq, ugradw_nm1, ugradw_n = params
+    @unpack nu, Δt, ksq, ugradw_nm1, ugradw_n = params
 
     # Solve for streamfunction
     psihat = _poisson_fourier_fourier(-what)
@@ -28,10 +28,10 @@ function vorticity_ff_ns_step!(what::Array{T},params::VorticityFourierFourierNSC
     ugradw_n .= _convective_derivative_fourier_fourier(what,psihat)
 
     # Implicit/Explicit Euler 
-    #what .= (what .- Δt*ugradw_n)./(1 .+ Δt/Re*ksq)
+    #what .= (what .- Δt*ugradw_n)./(1 .+ nu*Δt*ksq)
 
     # Adams/Bashforth and Crank/Nicolson
-    what .= ((1 .- 0.5*Δt/Re*ksq).*what .- 1.5*Δt*ugradw_n .+ 0.5*Δt*ugradw_nm1)./(1 .+ 0.5*Δt/Re*ksq)
+    what .= ((1 .- 0.5*nu*Δt*ksq).*what .- 1.5*Δt*ugradw_n .+ 0.5*Δt*ugradw_nm1)./(1 .+ 0.5*nu*Δt*ksq)
 
 
 end
@@ -39,7 +39,7 @@ end
 #= Fourier-Chebyshev solver =#
 
 struct VorticityFourierChebyshevNSCache{T,Nx,Ny} <: AbstractPseudoSpectralCache
-    Re :: Real
+    nu :: Real
     Δt :: Real
     ksq :: Array{T,1}
     ugradw_np1 :: Array{Complex{T},2}
@@ -54,7 +54,7 @@ struct VorticityFourierChebyshevNSCache{T,Nx,Ny} <: AbstractPseudoSpectralCache
     D2 :: Matrix{T}
 end
 
-function VorticityFourierChebyshevNSCache(Nx::Int,Ny::Int,Re::Real,Δt::Real,gplus::Vector,gminus::Vector,hplus::Vector,hminus::Vector;dtype=Float64)
+function VorticityFourierChebyshevNSCache(Nx::Int,Ny::Int,nu::Real,Δt::Real,gplus::Vector,gminus::Vector,hplus::Vector,hminus::Vector;dtype=Float64)
     kx, ksq = _get_ksq_shifted_1d(Nx)
     ugradw_np1 = zeros(Complex{dtype},Nx,Ny+1)
     ugradw_n = zeros(Complex{dtype},Nx,Ny+1)
@@ -69,16 +69,16 @@ function VorticityFourierChebyshevNSCache(Nx::Int,Ny::Int,Re::Real,Δt::Real,gpl
     hplus_hat = physical2fourier(hplus)
     hminus_hat = physical2fourier(hminus)
 
-    return VorticityFourierChebyshevNSCache{dtype,Nx,Ny}(Re,Δt,ksq,ugradw_np1,ugradw_n,ugradw_nm1,fhat,
+    return VorticityFourierChebyshevNSCache{dtype,Nx,Ny}(nu,Δt,ksq,ugradw_np1,ugradw_n,ugradw_nm1,fhat,
                                                         gplus_hat, gminus_hat, hplus_hat, hminus_hat, D1,D2)
 end
  
-function VorticityFourierChebyshevNSCache(Nx::Int,Ny::Int,Re::Real,Δt::Real,gplus::Real,gminus::Real,hplus::Real,hminus::Real;dtype=Float64)
-    VorticityFourierChebyshevNSCache(Nx,Ny,Re,Δt,gplus*ones(Nx),gminus*ones(Nx),hplus*ones(Nx),hminus*ones(Nx);dtype=dtype)
+function VorticityFourierChebyshevNSCache(Nx::Int,Ny::Int,nu::Real,Δt::Real,gplus::Real,gminus::Real,hplus::Real,hminus::Real;dtype=Float64)
+    VorticityFourierChebyshevNSCache(Nx,Ny,nu,Δt,gplus*ones(Nx),gminus*ones(Nx),hplus*ones(Nx),hminus*ones(Nx);dtype=dtype)
 end
 
 function vorticity_fc_ns_step!(what,psihat,params::VorticityFourierChebyshevNSCache)
-    @unpack Re, Δt, ksq, ugradw_np1, ugradw_n, ugradw_nm1, fhat, gplus_hat, gminus_hat, hplus_hat, hminus_hat, D1, D2 = params
+    @unpack nu, Δt, ksq, ugradw_np1, ugradw_n, ugradw_nm1, fhat, gplus_hat, gminus_hat, hplus_hat, hminus_hat, D1, D2 = params
 
     # call convective derivative to set ugradw_n and set ugradw_nm1 to previous one
     ugradw_nm1 .= ugradw_n
@@ -89,10 +89,10 @@ function vorticity_fc_ns_step!(what,psihat,params::VorticityFourierChebyshevNSCa
 
     # build fhat
     #ϵ, θ = 1, 0.5 # Crank-Nicolson
-    kfact = ksq .- 2*Re/Δt
-    fhat .= kfact.*what - what*transpose(D2) + Re*ugradw_np1 + Re*ugradw_n    
+    kfact = ksq .- 2/(nu*Δt)
+    fhat .= kfact.*what - what*transpose(D2) + ugradw_np1/nu + ugradw_n/nu    
     
-    sigma0 = 2*Re/Δt
+    sigma0 = 2/(nu*Δt)
 
     # advance with _vorticity_and_streamfunction_chebyshev
     what_np1, psihat_np1 = _vorticity_and_streamfunction_chebyshev(fhat,sigma0,ksq,gplus_hat,gminus_hat,hplus_hat,hminus_hat,D1,D2)
