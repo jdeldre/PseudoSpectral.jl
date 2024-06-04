@@ -116,6 +116,37 @@ function chebdiff(f::AbstractVector)
     return ifchebt(da)
 end
 
+"""
+    chebint(f[,dim]) -> Real
+
+Given a set of data on the Chebshev extrema points, return
+the integral (quadrature) of the data
+"""
+function chebint(f::AbstractVector)
+    n = length(f) - 1
+    wts = sin.(π*(0:n)/n)
+    c = ones(n+1)
+    c[1] = c[n+1] = 0.5
+    return sum(c.*f.*wts)*π/n
+
+end
+
+function chebint(f::AbstractArray,dim::Int)
+    n = size(f,dim) - 1
+    wts = sin.(π*(0:n)/n)
+    c = ones(n+1)
+    c[1] = c[n+1] = 0.5
+    _chebint(c,wts,f,n,Val(dim))
+end
+
+function _chebint(c,wts,f,n,::Val{1})
+    sum(c.*wts.*f,dims=1)*π/n
+end
+
+function _chebint(c,wts,f,n,::Val{2})
+    vec(sum(transpose(c.*wts.*transpose(f)),dims=2)*π/n)
+end
+
 function _zero_small_values!(a)
     a[abs.(a).<eps()] .= 0.0
 end
