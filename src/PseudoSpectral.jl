@@ -6,7 +6,7 @@ module PseudoSpectral
 
     export zeropad, unzeropad, velocity, streamfunction, vorticity, physical2fourier,
             fourier2physical, VorticityFourierFourierNSCache, vorticity_ff_ns_step!, fourierDx, fourierDy,
-            shearlayer, twovortex, randomfield
+            shearlayer, twovortex, randomfield, wavenumbers_fourier
 
     export dct1, idct1, fchebt, ifchebt, chebdcoeffs, chebdiff, chebint, VorticityFourierChebyshevNSCache, vorticity_fc_ns_step!,
             randomfield_fourier_chebyshev

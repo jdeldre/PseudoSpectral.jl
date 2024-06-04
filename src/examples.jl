@@ -27,7 +27,7 @@ function twovortex(x::AbstractVector,y::AbstractVector; radius = 0.2, distance =
 end
 
 
-function randomfield(x::AbstractVector,y::AbstractVector; factor = 10.0)
+function randomfield(x::AbstractVector,y::AbstractVector; factor = 1.0)
     Nx, Ny = length(x), length(y)
     f = zeros(Nx,Ny)
     fhat = physical2fourier(f)

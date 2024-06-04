@@ -49,6 +49,11 @@ function _get_ksq_shifted_1d(N::Int)
     return k, ksq
 end
 
+function wavenumbers_fourier(Nx::Int,Ny::Int)
+    kx, ky, _ = _get_ksq_shifted(Nx,Ny)
+    return kx, ky
+end
+
 
 function _get_ksq_shifted(Nx::Int,Ny::Int)
     kx = fftshift(-Nx÷2:Nx÷2-1)
