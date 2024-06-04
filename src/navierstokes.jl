@@ -2,22 +2,37 @@ struct VorticityFourierFourierNSCache{T,Nx,Ny} <: AbstractPseudoSpectralCache
     Re :: Real
     Δt :: Real
     ksq :: Array{T,2}
-    ugradw :: Array{Complex{T},2}
+    ugradw_np1 :: Array{Complex{T},2}
+    ugradw_n :: Array{Complex{T},2}
+    ugradw_nm1 :: Array{Complex{T},2}
+
 end
 
 function VorticityFourierFourierNSCache(Nx::Int,Ny::Int,Re::Real,Δt::Real;dtype=Float64)
     kx, ky, ksq = _get_ksq_shifted(Nx,Ny)
-    ugradw = zeros(Complex{dtype},Nx,Ny)
-    return VorticityFourierFourierNSCache{dtype,Nx,Ny}(Re,Δt,ksq,ugradw)
+    ugradw_np1 = zeros(Complex{dtype},Nx,Ny)
+    ugradw_n = zeros(Complex{dtype},Nx,Ny)
+    ugradw_nm1 = zeros(Complex{dtype},Nx,Ny)
+
+    return VorticityFourierFourierNSCache{dtype,Nx,Ny}(Re,Δt,ksq,ugradw_np1,ugradw_n,ugradw_nm1)
 end
 
 function vorticity_ff_ns_step!(what::Array{T},params::VorticityFourierFourierNSCache{Nx,Ny}) where {T<:ComplexF64,Nx,Ny}
-    @unpack Re, Δt, ksq, ugradw = params
+    @unpack Re, Δt, ksq, ugradw_nm1, ugradw_n = params
+
+    # Solve for streamfunction
     psihat = _poisson_fourier_fourier(-what)
     psihat[1,1] = 0
 
-    ugradw .= _convective_derivative_fourier_fourier(what,psihat)
-    what .= (what .- Δt*ugradw)./(1 .+ Δt/Re*ksq)
+    ugradw_nm1 .= ugradw_n
+    ugradw_n .= _convective_derivative_fourier_fourier(what,psihat)
+
+    # Implicit/Explicit Euler 
+    #what .= (what .- Δt*ugradw_n)./(1 .+ Δt/Re*ksq)
+
+    # Adams/Bashforth and Crank/Nicolson
+    what .= ((1 .- 0.5*Δt/Re*ksq).*what .- 1.5*Δt*ugradw_n .+ 0.5*Δt*ugradw_nm1)./(1 .+ 0.5*Δt/Re*ksq)
+
 
 end
 
